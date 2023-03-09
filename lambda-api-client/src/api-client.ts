@@ -34,7 +34,11 @@ export class APIClient {
   //   this.clientSecret = apiConfig.clientSecret;
   //   this.scope = apiConfig.scope;
   // }
-  constructor(private readonly config: APIConfig) {this.retries = config.retries ?? 0}
+  constructor(private readonly config: APIConfig) {
+    this.retries = config.retries ?? 0;
+    this.accessToken = '';
+    this.tokenExpiration = 0;
+  }
 
   public async fetchApi(options: FetchOptions): Promise<any> {
     
@@ -76,12 +80,12 @@ export class APIClient {
       }
       
 
-      if (response.status === 403 ) {
+      if (response?.status === 403 ) {
         throw new APIAccessDenied(`API call to ${url} was denied: ${error.message}`);
-      } else if (response.status === 401 && error.message.includes('jwt expired') ) {
+      } else if (response?.status === 401 && error.message.includes('jwt expired') ) {
         throw new APIClientTokenExpired(`Token expired while making API call to ${url}`);
       } else {
-        throw new APIClientError(`API call to ${url} failed with status ${response.status}: ${error.message}`);
+        throw new APIClientError(`API call to ${url} failed with status ${response?.status}: ${error.message}`);
       }
       
       
@@ -127,7 +131,7 @@ export class APIClient {
     this.tokenExpiration = Date.now() + data.expires_in * 1000 - 300000; // Refresh token 5 minutes before expiration
   }
 
-  private isRetriableError(error:Error) {
+  private isRetriableError(error:any) {
     if (error instanceof Error && (error.message.includes('jwt expired') || error.message.includes('timed out'))) {
       return true
     }
