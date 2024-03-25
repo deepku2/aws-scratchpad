@@ -1,0 +1,54 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowCreateRoleWithSpecificTrustPolicyAndPath",
+            "Effect": "Allow",
+            "Action": "iam:CreateRole",
+            "Resource": [
+                "arn:aws:iam::*:role/approle/*",
+                "arn:aws:iam::*:role/cicdrole/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "iam:PassedToService": [
+                        "lambda.amazonaws.com",
+                        "states.amazonaws.com",
+                        "ecs-tasks.amazonaws.com",
+                        "edgelambda.amazonaws.com",
+                        "elasticloadbalancing.amazonaws.com",
+                        "events.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "AllowAttachPolicies",
+            "Effect": "Allow",
+            "Action": [
+                "iam:AttachRolePolicy",
+                "iam:PutRolePolicy"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:role/approle/*",
+                "arn:aws:iam::*:role/cicdrole/*"
+            ]
+        },
+        {
+            "Sid": "AllowRoleConfiguration",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetRole",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListRolePolicies",
+                "iam:DeleteRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:DeleteRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:role/approle/*",
+                "arn:aws:iam::*:role/cicdrole/*"
+            ]
+        }
+    ]
+}
