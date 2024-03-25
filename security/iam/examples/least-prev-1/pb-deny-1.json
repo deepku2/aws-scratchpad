@@ -1,0 +1,64 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowAssumeRoleForSpecificServices",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:CalledVia": [
+                        "lambda.amazonaws.com",
+                        "states.amazonaws.com",
+                        "ecs-tasks.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "DenyControlPlaneActions",
+            "Effect": "Deny",
+            "NotAction": [
+                "dynamodb:GetItem",
+                "dynamodb:BatchGetItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "s3:Get*",
+                "s3:List*",
+                "s3:PutObject",
+                "s3:DeleteObject",
+                "sqs:SendMessage",
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage",
+                "sns:Publish",
+                "events:PutEvents",
+                "es:ESHttpGet",
+                "es:ESHttpPut",
+                "es:ESHttpPost",
+                "es:ESHttpDelete",
+                "rds-data:*",
+                "rds:*",
+                "opensearch:Get*",
+                "opensearch:Search*",
+                "opensearch:List*"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringNotLike": {
+                    "aws:RequestTag/Environment": "Prod"
+                }
+            }
+        },
+        {
+            "Sid": "DenyIAMActions",
+            "Effect": "Deny",
+            "Action": "iam:*",
+            "Resource": "*"
+        }
+    ]
+}
